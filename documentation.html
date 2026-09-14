@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ParticipantFlow for JSM Documentation</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg: #faf9f6;
+    --surface: #ffffff;
+    --ink: #21242c;
+    --ink-soft: #4b5160;
+    --muted: #767c8a;
+    --border: #e4e1d8;
+    --accent: #2d6a4f;
+    --accent-soft: #eaf3ee;
+    --code-bg: #f2f0ea;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #14161b;
+      --surface: #1a1d24;
+      --ink: #e7e6e1;
+      --ink-soft: #b9bcc4;
+      --muted: #8b909c;
+      --border: #2b2f38;
+      --accent: #8fd0af;
+      --accent-soft: #1c2b23;
+      --code-bg: #21242c;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #14161b;
+    --surface: #1a1d24;
+    --ink: #e7e6e1;
+    --ink-soft: #b9bcc4;
+    --muted: #8b909c;
+    --border: #2b2f38;
+    --accent: #8fd0af;
+    --accent-soft: #1c2b23;
+    --code-bg: #21242c;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'IBM Plex Sans', -apple-system, 'Hiragino Sans', sans-serif;
+    line-height: 1.7;
+    padding-inline: 20px;
+  }
+
+  .page {
+    max-width: 760px;
+    margin: 0 auto;
+    padding-block: 56px 80px;
+  }
+
+  header.doc-head {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 28px;
+    margin-bottom: 40px;
+  }
+
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  h1 {
+    font-family: 'Source Serif 4', Georgia, serif;
+    font-weight: 700;
+    font-size: clamp(28px, 5vw, 38px);
+    margin: 10px 0 14px;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 22px;
+    font-size: 13.5px;
+    color: var(--muted);
+  }
+  .meta strong { color: var(--ink-soft); font-weight: 600; }
+
+  h2 {
+    font-family: 'Source Serif 4', Georgia, serif;
+    font-size: 22px;
+    font-weight: 600;
+    margin: 44px 0 12px;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+  h2 .num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px;
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  h3 {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 15.5px;
+    font-weight: 600;
+    color: var(--ink);
+    margin: 22px 0 6px;
+  }
+
+  p, li { color: var(--ink-soft); font-size: 15.5px; max-width: 68ch; }
+  strong { color: var(--ink); }
+  ul, ol { padding-left: 1.3em; margin: 10px 0; }
+  li { margin-bottom: 6px; }
+
+  code {
+    font-family: 'IBM Plex Mono', monospace;
+    background: var(--code-bg);
+    color: var(--ink);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 0.9em;
+  }
+
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    overflow-x: auto;
+    margin: 14px 0;
+  }
+  pre code { background: none; padding: 0; }
+
+  .callout {
+    background: var(--accent-soft);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 8px;
+    padding: 16px 18px;
+    margin: 18px 0;
+  }
+  .callout p { color: var(--ink-soft); margin: 0; font-size: 14.5px; }
+
+  .field-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 14px 0;
+    font-size: 14.5px;
+  }
+  .field-table th, .field-table td {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    color: var(--ink-soft);
+    vertical-align: top;
+  }
+  .field-table th {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .field-table td code { white-space: nowrap; }
+
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+
+  footer.doc-foot {
+    margin-top: 56px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--muted);
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <header class="doc-head">
+    <div class="eyebrow">Documentation</div>
+    <h1>ParticipantFlow for JSM</h1>
+    <div class="meta">
+      <span><strong>Vendor</strong> Seisuke Nagahara</span>
+      <span><strong>Version</strong> 2.5.0</span>
+      <span><strong>Contact</strong> <a href="mailto:isanayasiro10@gmail.com">isanayasiro10@gmail.com</a></span>
+    </div>
+  </header>
+
+  <p>ParticipantFlow for JSM adds one action to Jira Automation: <strong>Add Request Participants (ParticipantFlow for JSM)</strong>. This page covers how to add it to a rule, what each setting does, its output Smart Values, and troubleshooting.</p>
+
+  <h2><span class="num">01</span> Adding the action to a rule</h2>
+  <ol>
+    <li>Open the Jira Service Management project you want to automate, then go to <strong>Project settings &rarr; Automation</strong> (or a global rule under <strong>Jira settings &rarr; System &rarr; Automation rules</strong>).</li>
+    <li>Create or edit a rule. Add any trigger that gives you a Service Management request &mdash; for example <em>Manual trigger</em>, <em>Issue created</em>, or <em>Issue transitioned</em>.</li>
+    <li>Add a new action and search for <strong>Add Request Participants (ParticipantFlow for JSM)</strong>.</li>
+    <li>The first time you use the action, click <strong>Connect</strong> to authorize it &mdash; no API token or password is required.</li>
+    <li>Fill in the fields described below, then save the step.</li>
+    <li>Add further actions (for example <em>Send email</em> or <em>Add comment</em>) that use the action&rsquo;s output.</li>
+  </ol>
+
+  <h2><span class="num">02</span> Action settings</h2>
+  <table class="field-table">
+    <tr><th>Field</th><th>What it does</th></tr>
+    <tr><td>Issue Key</td><td>The Service Management request to update. Usually left as <code>{{issue.key}}</code> so the action runs against the issue the rule is triggered on.</td></tr>
+    <tr><td>Source</td><td>Which of the three inputs below to use: <code>group</code>, <code>emails</code>, or <code>accountIds</code>.</td></tr>
+    <tr><td>Group name or Group ID</td><td>Used when Source is <code>group</code>. Every member of the group is added. Requires the rule&rsquo;s actor to have Jira administrator permission (see <a href="#note">note below</a>).</td></tr>
+    <tr><td>Email list</td><td>Used when Source is <code>emails</code>. Comma or newline separated. Each address is resolved to an Account ID; unresolved addresses are skipped and reported, not treated as errors.</td></tr>
+    <tr><td>Account ID list</td><td>Used when Source is <code>accountIds</code>. Comma or newline separated Account IDs, added directly.</td></tr>
+  </table>
+
+  <div class="callout">
+    <p><strong>Existing participants are never removed.</strong> The action always reads the current Request Participants first and only adds the difference. Running the same rule twice on the same request never creates duplicates.</p>
+  </div>
+
+  <h2><span class="num">03</span> Using the output</h2>
+  <p>Automation names the action&rsquo;s output after the action itself, camelCased from the entity name declared in the app. Check the exact Smart Value name Automation shows for your specific step (it can vary rule to rule), then reference the fields below, for example <code>{{addRequestParticipantsResult.addedCount}}</code>:</p>
+  <table class="field-table">
+    <tr><th>Smart Value field</th><th>Contents</th></tr>
+    <tr><td><code>addedCount</code></td><td>How many participants were newly added in this run.</td></tr>
+    <tr><td><code>skippedCount</code></td><td>How many were already participants, so were skipped (not duplicated).</td></tr>
+    <tr><td><code>failedCount</code></td><td>How many inputs could not be resolved or added.</td></tr>
+    <tr><td><code>addedAccountIds</code></td><td>Comma-separated list of the Account IDs actually added.</td></tr>
+    <tr><td><code>failedValues</code></td><td>Comma-separated list of the inputs that failed, with the reason.</td></tr>
+    <tr><td><code>summary</code></td><td>A one-line, human-readable summary of the result.</td></tr>
+  </table>
+
+  <h3>Example: notify on partial failure</h3>
+  <pre><code>Condition: {{addRequestParticipantsResult.failedCount}} &gt; 0
+
+Action: Add comment (internal only)
+Some participants could not be added: {{addRequestParticipantsResult.failedValues}}</code></pre>
+
+  <h2><span class="num">04</span> Troubleshooting</h2>
+  <ul>
+    <li><strong>Everything in the email list fails.</strong> JSM customer-only (portal-only) accounts are sometimes not resolvable through Jira&rsquo;s standard user-search API, depending on profile visibility and site configuration &mdash; this is a known limitation of the underlying Atlassian API, not an app bug. Try the Account ID source instead if you already know the Account ID.</li>
+    <li id="note"><strong>Group source returns a permission error.</strong> Reading Jira group membership requires the Automation rule&rsquo;s actor to have Jira administrator permission &mdash; this is required by Atlassian&rsquo;s own Group Members API. Check the rule&rsquo;s <strong>Actor</strong> setting under Settings.</li>
+    <li><strong>A large group only added the first 500 members.</strong> This is an intentional safety cap to keep the action within Forge&rsquo;s execution time limits. Split very large groups into smaller ones if you need to add more than 500 people in a single run.</li>
+    <li><strong>Smart Value shows literally as text instead of a value.</strong> The entity name in your rule differs from the example above &mdash; open the action step in the rule editor to see the exact name Automation assigned it.</li>
+  </ul>
+
+  <h2><span class="num">05</span> Related documents</h2>
+  <ul>
+    <li>Privacy Policy (link to be added once published)</li>
+    <li>End User Agreement (link to be added once published)</li>
+  </ul>
+
+  <h2><span class="num">06</span> Support</h2>
+  <p>Questions or issues with the action: <a href="mailto:isanayasiro10@gmail.com">isanayasiro10@gmail.com</a>.</p>
+
+  <footer class="doc-foot">
+    ParticipantFlow for JSM &middot; an independently developed Atlassian Marketplace app for Jira Service Management Cloud &middot; not affiliated with or endorsed by Atlassian beyond standard Marketplace listing.
+  </footer>
+</div>
+
+</body>
+</html>
