@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Native Jira Automation vs ParticipantFlow for JSM</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg: #faf9f6;
+    --surface: #ffffff;
+    --ink: #21242c;
+    --ink-soft: #4b5160;
+    --muted: #767c8a;
+    --border: #e4e1d8;
+    --accent: #2d6a4f;
+    --accent-soft: #eaf3ee;
+    --code-bg: #f2f0ea;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #14161b;
+      --surface: #1a1d24;
+      --ink: #e7e6e1;
+      --ink-soft: #b9bcc4;
+      --muted: #8b909c;
+      --border: #2b2f38;
+      --accent: #8fd0af;
+      --accent-soft: #1c2b23;
+      --code-bg: #21242c;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #14161b;
+    --surface: #1a1d24;
+    --ink: #e7e6e1;
+    --ink-soft: #b9bcc4;
+    --muted: #8b909c;
+    --border: #2b2f38;
+    --accent: #8fd0af;
+    --accent-soft: #1c2b23;
+    --code-bg: #21242c;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'IBM Plex Sans', -apple-system, 'Hiragino Sans', sans-serif;
+    line-height: 1.7;
+    padding-inline: 20px;
+  }
+
+  .page {
+    max-width: 760px;
+    margin: 0 auto;
+    padding-block: 56px 80px;
+  }
+
+  header.doc-head {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 28px;
+    margin-bottom: 40px;
+  }
+
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  h1 {
+    font-family: 'Source Serif 4', Georgia, serif;
+    font-weight: 700;
+    font-size: clamp(28px, 5vw, 38px);
+    margin: 10px 0 14px;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 22px;
+    font-size: 13.5px;
+    color: var(--muted);
+  }
+  .meta strong { color: var(--ink-soft); font-weight: 600; }
+
+  h2 {
+    font-family: 'Source Serif 4', Georgia, serif;
+    font-size: 22px;
+    font-weight: 600;
+    margin: 44px 0 12px;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+  h2 .num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px;
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  h3 {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 15.5px;
+    font-weight: 600;
+    color: var(--ink);
+    margin: 22px 0 6px;
+  }
+
+  p, li { color: var(--ink-soft); font-size: 15.5px; max-width: 68ch; }
+  strong { color: var(--ink); }
+  ul, ol { padding-left: 1.3em; margin: 10px 0; }
+  li { margin-bottom: 6px; }
+
+  code {
+    font-family: 'IBM Plex Mono', monospace;
+    background: var(--code-bg);
+    color: var(--ink);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 0.9em;
+  }
+
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    overflow-x: auto;
+    margin: 14px 0;
+  }
+  pre code { background: none; padding: 0; }
+
+  .callout {
+    background: var(--accent-soft);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 8px;
+    padding: 16px 18px;
+    margin: 18px 0;
+  }
+  .callout p { color: var(--ink-soft); margin: 0; font-size: 14.5px; }
+
+  .field-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 14px 0;
+    font-size: 14.5px;
+  }
+  .field-table th, .field-table td {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    color: var(--ink-soft);
+    vertical-align: top;
+  }
+  .field-table th {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .field-table td code { white-space: nowrap; }
+
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+
+  footer.doc-foot {
+    margin-top: 56px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .field-table td { min-width: 120px; }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <header class="doc-head">
+    <div class="eyebrow">Comparison</div>
+    <h1>Adding JSM Request Participants: Native Jira Automation vs ParticipantFlow</h1>
+    <div class="meta">
+      <span><strong>Published by</strong> ASUNOKI, the developer of ParticipantFlow for JSM</span>
+      <span><strong>Applies to</strong> Jira Service Management Cloud</span>
+      <span><strong>Checked</strong> October 2026</span>
+    </div>
+  </header>
+
+  <p><em>Disclosure: this page is written by the developer of ParticipantFlow for JSM, so read it with that in mind. Part 1 is useful on its own &mdash; it describes what you can do with Jira Automation without installing anything.</em></p>
+
+  <p>The <strong>Request participants</strong> field in Jira Service Management is a user picker. It accepts people, not groups, and it does not accept email addresses that are not already linked to an account. This page compares the ways to fill it from a Jira group, from a list of emails, or from account IDs.</p>
+
+  <h2><span class="num">01</span> What native Jira Automation can do</h2>
+  <p>Everything below uses features that ship with Jira Automation. The two Atlassian articles this section is based on are linked at the end.</p>
+
+  <h3>Add the members of a group</h3>
+  <p>Atlassian&rsquo;s knowledge base describes this workaround, because selecting a group directly in the field is not supported (the feature request is JSDCLOUD-1268):</p>
+  <ol>
+    <li>Create a <em>Group picker</em> custom field in the service project and hold the target group in it (it can be the field&rsquo;s default value).</li>
+    <li>Add a <em>Send web request</em> action that calls the Jira groups-picker endpoint to get the group ID. It uses Basic authentication with an email address and an API token.</li>
+    <li>Add a second <em>Send web request</em> that calls the group-members endpoint with that group ID.</li>
+    <li>Add an <em>Edit work item</em> action that sets <strong>Request participants</strong> from the account IDs in the response, using the option that keeps the existing values.</li>
+  </ol>
+  <p>Atlassian notes that the rule adds the members present when it runs, that later group changes are not synced to existing requests, and that very large groups can exceed automation execution limits.</p>
+
+  <h3>Add people you already know</h3>
+  <ul>
+    <li><strong>Edit work item</strong> with the Request participants field: pick users, or copy from another user field, and choose the option to add to existing values.</li>
+    <li><strong>Edit work item</strong> with advanced JSON using <code>add</code>/<code>remove</code> and account IDs.</li>
+    <li><strong>Send web request</strong> to the Service Desk participants endpoint with a body of account IDs.</li>
+  </ul>
+
+  <h3>Add people from email addresses</h3>
+  <p>Email addresses cannot be written to the field directly. Atlassian&rsquo;s article splits the addresses, loops over them, calls the Jira user-search API for each one to get an account ID, and then edits the field. A person without an account in the site has no account ID to add.</p>
+  <p>Several threads on the Atlassian Community report that this loop can leave out some of the people when many addresses are processed, for example <a href="https://community.atlassian.com/forums/discussion/3286117/branch-concurrence-issue-in-jsm-automation">this 2026 discussion</a>. The suggested explanation is that branches run in parallel and overwrite each other. Whether you are affected depends on how the rule is built, so test with more addresses than you expect to use.</p>
+
+  <h2><span class="num">02</span> Side by side</h2>
+  <table class="field-table">
+    <tr><th>Topic</th><th>Native Jira Automation</th><th>ParticipantFlow for JSM</th></tr>
+    <tr><td>Add the members of a Jira group</td><td>Possible with a group picker field, two web requests and an edit action.</td><td>One action: enter a Jira group name or ID. Adds active members, up to 500 per run.</td></tr>
+    <tr><td>Add from email addresses</td><td>Possible with a loop, a user-search web request per address and an edit action. Reported to be sensitive to parallel branches.</td><td>One action: paste a comma- or newline-separated list. Addresses that match no single user are skipped and reported.</td></tr>
+    <tr><td>Add from account IDs</td><td>Edit work item (JSON) or a web request.</td><td>One action. The IDs are sent to Jira in one batch, so one invalid ID makes the step fail.</td></tr>
+    <tr><td>Existing participants</td><td>Kept if the action is configured to add to existing values; a misconfigured edit can replace them.</td><td>Never removes or replaces participants. People who are already participants are skipped.</td></tr>
+    <tr><td>First setup</td><td>Custom field, web requests, headers, JSON and variables to build and test.</td><td>Install, add the action, click Connect, fill in three fields.</td></tr>
+    <tr><td>API token / web requests</td><td>Needed for the group and email methods (Basic authentication with an API token).</td><td>Not needed. The action runs with the permissions of the account that clicked Connect.</td></tr>
+    <tr><td>Permissions</td><td>The credentials you use in the web requests must be allowed to read the group and edit the request.</td><td>The group source needs the connecting account to have the <strong>Administer Jira</strong> permission. Email and account ID sources do not.</td></tr>
+    <tr><td>Ongoing maintenance</td><td>You own the rule: API token management, field changes, Atlassian changes to the documented method.</td><td>The app is maintained by its developer. You still own the rule that calls it, and the connecting account must stay valid.</td></tr>
+    <tr><td>Cost</td><td>Included with Jira Automation (subject to your plan&rsquo;s automation limits).</td><td>Paid app via Atlassian Marketplace with a 30-day free trial.</td></tr>
+  </table>
+
+  <h2><span class="num">03</span> What ParticipantFlow does not do</h2>
+  <ul>
+    <li><strong>It does not remove participants.</strong> It only adds.</li>
+    <li><strong>It is not a continuous sync.</strong> Like the native method, it adds the group&rsquo;s members when the rule runs. Later changes to the group are not applied to earlier requests.</li>
+    <li><strong>It reads Jira groups only.</strong> A Jira group is not the same thing as a group in an external directory such as Microsoft Entra ID. The group source only works with a group that exists in Jira; how an external group appears in Jira depends on your identity setup.</li>
+    <li><strong>The group source adds Jira users.</strong> Portal-only customer accounts cannot be members of Jira groups. Use the email or account ID source for them.</li>
+    <li><strong>Results depend on your site.</strong> Resolving an email address to an account and adding a participant depend on permissions and settings such as profile visibility and who the request allows as participants.</li>
+    <li><strong>Adding participants has side effects.</strong> Participants can receive notifications and can see the request in the portal according to your project settings. Test with your own accounts first.</li>
+  </ul>
+
+  <h2><span class="num">04</span> Which should you use?</h2>
+  <ul>
+    <li>If you add a handful of known people, or you already maintain a working rule, native Automation is probably enough.</li>
+    <li>If you often add whole groups or long email lists, or you do not want to manage an API token and web requests in each rule, ParticipantFlow reduces the setup to one action.</li>
+    <li>Whichever you choose, run it first on a test request and check the rule&rsquo;s audit log.</li>
+  </ul>
+  <p>To try it, see the <a href="documentation.html#quick-start">Quick start</a> or the <a href="https://marketplace.atlassian.com/apps/2028299522/participantflow-for-jsm">Atlassian Marketplace listing</a>.</p>
+
+  <h2><span class="num">05</span> Sources</h2>
+  <ul>
+    <li><a href="https://support.atlassian.com/jira/kb/how-to-add-group-members-as-request-participants/">How to add group members as request participants</a> (Atlassian support, updated July 2026)</li>
+    <li><a href="https://support.atlassian.com/jira/kb/add-update-remove-request-participants-using-automation-in-jsm-cloud/">Manage request participants with automation in JSM Cloud</a> (Atlassian support, updated June 2026)</li>
+    <li><a href="https://jira.atlassian.com/browse/JSDCLOUD-1268">JSDCLOUD-1268</a> (feature request: select a group in Request participants)</li>
+  </ul>
+  <p>Atlassian may change these methods; check the linked articles for the current steps.</p>
+
+  <footer class="doc-foot">
+    ParticipantFlow for JSM &middot; developed by ASUNOKI &middot; <a href="mailto:support@asunoki.jp">support@asunoki.jp</a> &middot; <a href="documentation.html">Documentation</a> &middot; <a href="privacy-policy.html">Privacy Policy</a>
+  </footer>
+</div>
+
+</body>
+</html>
