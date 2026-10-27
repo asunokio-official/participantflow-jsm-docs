@@ -199,7 +199,28 @@
 
   <p>ParticipantFlow for JSM adds one action to Jira Automation: <strong>Add Request Participants (ParticipantFlow for JSM)</strong>. It adds Request Participants to a Jira Service Management request from a Jira group, a list of email addresses, or a list of account IDs &mdash; without an API token or a hand-built <em>Send web request</em> step. This page covers setup, each setting, the output smart values, what the action does and does not do, and troubleshooting.</p>
 
-  <h2><span class="num">01</span> Adding the action to a rule</h2>
+  <h2 id="quick-start">Quick start</h2>
+  <p>A short path from installation to a first successful run. How long it takes depends on your site; use a test request so no real customer is affected.</p>
+  <ol>
+    <li><strong>Install.</strong> A Jira administrator opens the <em>ParticipantFlow for JSM</em> listing on the Atlassian Marketplace and chooses <strong>Try it free</strong>, then selects the Jira Service Management site.</li>
+    <li><strong>Create a rule.</strong> In your Service Management project go to <strong>Project settings &rarr; Automation &rarr; Create rule</strong>. For a first test choose the <em>Manual trigger</em> (it adds a button to the request&rsquo;s Automation menu).</li>
+    <li><strong>Add the action.</strong> Choose <strong>Add component &rarr; Add action</strong> and search for <strong>Add Request Participants (ParticipantFlow for JSM)</strong>.</li>
+    <li><strong>Connect.</strong> Click <strong>Connect</strong> in the action. The action then runs with the permissions of the Atlassian account that connected it. No API token or password is needed.</li>
+    <li><strong>Fill in the fields.</strong> Issue Key <code>{{issue.key}}</code>, then set <strong>Source</strong> to one of <code>group</code>, <code>emails</code> or <code>accountIds</code> and fill in only the matching field:
+      <ul>
+        <li><code>group</code> &mdash; a Jira group name or ID, for example <code>support-team</code>.</li>
+        <li><code>emails</code> &mdash; for example <code>user1@example.com, user2@example.com</code>.</li>
+        <li><code>accountIds</code> &mdash; for example <code>5b10ac8d82e05b22cc7d4ef5</code>.</li>
+      </ul>
+    </li>
+    <li><strong>Show the result.</strong> Add an <em>Add comment to work item</em> step (set it to internal) with the text <code>Request participants updated. {{updatedJiraResult.summary}}</code>. Save and turn the rule on.</li>
+    <li><strong>Run it on a test request.</strong> Open a test request, click the <strong>Automation</strong> (lightning) button and run the rule. The comment shows a summary such as <code>Added: 1 / Skipped (already participants or duplicates): 0 / Failed: 0</code>. You can also check the rule&rsquo;s <strong>Audit log</strong> for errors.</li>
+  </ol>
+  <div class="callout">
+    <p><strong>Before you run it on real requests:</strong> the <code>group</code> source needs the connected account to have the <strong>Administer Jira</strong> permission. Existing participants are kept and people who are already participants are skipped. Request participants may receive notifications and can see the request in the portal according to your project settings, so test with your own accounts first. Details are in the sections below.</p>
+  </div>
+
+  <h2><span class="num">01</span> Adding the action to a rule &mdash; details</h2>
   <ol>
     <li>Open the Jira Service Management project you want to automate, then go to <strong>Project settings &rarr; Automation</strong> (Jira administrators can also create a global rule from <strong>Jira settings &rarr; System &rarr; Automation</strong>).</li>
     <li>Create or edit a rule. Choose a trigger that gives the rule a Service Management request &mdash; for example <em>Manual trigger</em>, <em>Work item created</em>, or <em>Work item transitioned</em>.</li>
