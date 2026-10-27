@@ -275,6 +275,16 @@ Action:  Add Request Participants (ParticipantFlow for JSM)
 Action:  Add comment to work item (internal)
            Request participants updated. {{updatedJiraResult.summary}}</code></pre>
 
+  <h3>Example: emails stored in a long text field (verified on team-managed JSM)</h3>
+  <p>This setup was tested on a team-managed Jira Service Management project (October 2026):</p>
+  <ol>
+    <li>The request type has a <em>Paragraph</em> (long text) field named <code>Participant Emails</code>. The requester enters comma-separated addresses, for example <code>a@example.com,b@example.com</code>.</li>
+    <li>A rule with a <em>Manual trigger</em> runs <strong>Add Request Participants (ParticipantFlow for JSM)</strong> with <strong>Source</strong> <code>emails</code> and <strong>Email list</strong> <code>{{issue.Participant Emails}}</code>.</li>
+    <li>With seven addresses in the field, one run reported <code>Added: 7 / Skipped (already participants or duplicates): 0 / Failed: 0</code> and all seven people appeared as request participants.</li>
+  </ol>
+  <p><strong>What was not tested:</strong> reading the answers of a Jira Service Management <em>Form</em> directly. Atlassian&rsquo;s documentation says form smart values are available with the <em>Form submitted</em> trigger; in this test a form answer read with a manual trigger came back empty, so if your emails exist only in a Form question, make sure they reach a Jira field or variable that the action can read. Re-running the action on the same request in the team-managed project was not tested; duplicate skipping was verified on another project.</p>
+  <p><strong>Conditions for email lookup:</strong> each address is looked up as an exact match by the Atlassian account that connected the action, and it must match exactly one existing account in the site. Whether an address can be found depends on that account&rsquo;s permissions and on the profile and account settings of the person you are adding. Addresses that cannot be matched are skipped and listed in <code>failedValues</code>. The test used fictional customer accounts, so results for other account types may differ.</p>
+
   <h3>Example: report unmatched emails</h3>
   <pre><code>Condition: {{updatedJiraResult.failedCount}} greater than 0
 Action:    Add comment (internal)
