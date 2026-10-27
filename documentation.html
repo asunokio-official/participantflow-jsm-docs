@@ -193,70 +193,97 @@
     <h1>ParticipantFlow for JSM</h1>
     <div class="meta">
       <span><strong>Vendor</strong> Seisuke Nagahara</span>
-      <span><strong>Version</strong> 2.1.0</span>
       <span><strong>Contact</strong> <a href="mailto:support@asunoki.jp">support@asunoki.jp</a></span>
     </div>
   </header>
 
-  <p>ParticipantFlow for JSM adds one action to Jira Automation: <strong>Add Request Participants (ParticipantFlow for JSM)</strong>. This page covers how to add it to a rule, what each setting does, its output Smart Values, and troubleshooting.</p>
+  <p>ParticipantFlow for JSM adds one action to Jira Automation: <strong>Add Request Participants (ParticipantFlow for JSM)</strong>. It adds Request Participants to a Jira Service Management request from a Jira group, a list of email addresses, or a list of account IDs &mdash; without an API token or a hand-built <em>Send web request</em> step. This page covers setup, each setting, the output smart values, what the action does and does not do, and troubleshooting.</p>
 
   <h2><span class="num">01</span> Adding the action to a rule</h2>
   <ol>
-    <li>Open the Jira Service Management project you want to automate, then go to <strong>Project settings &rarr; Automation</strong> (or a global rule under <strong>Jira settings &rarr; System &rarr; Automation rules</strong>).</li>
-    <li>Create or edit a rule. Add any trigger that gives you a Service Management request &mdash; for example <em>Manual trigger</em>, <em>Issue created</em>, or <em>Issue transitioned</em>.</li>
-    <li>Add a new action and search for <strong>Add Request Participants (ParticipantFlow for JSM)</strong>.</li>
-    <li>The first time you use the action, click <strong>Connect</strong> to authorize it &mdash; no API token or password is required.</li>
-    <li>Fill in the fields described below, then save the step.</li>
-    <li>Add further actions (for example <em>Send email</em> or <em>Add comment</em>) that use the action&rsquo;s output.</li>
+    <li>Open the Jira Service Management project you want to automate, then go to <strong>Project settings &rarr; Automation</strong> (Jira administrators can also create a global rule from <strong>Jira settings &rarr; System &rarr; Automation</strong>).</li>
+    <li>Create or edit a rule. Choose a trigger that gives the rule a Service Management request &mdash; for example <em>Manual trigger</em>, <em>Work item created</em>, or <em>Work item transitioned</em>.</li>
+    <li>Click <strong>Add component &rarr; Add action</strong> and search for <strong>Add Request Participants (ParticipantFlow for JSM)</strong>.</li>
+    <li>The first time you use the action in a rule, click <strong>Connect</strong>. This links the action to your Atlassian account so it can call Jira on your behalf; no API token or password is entered.</li>
+    <li>Fill in the fields described below and save the step.</li>
+    <li>Add later steps (for example <em>Add comment</em> or <em>Send email</em>) that use the action&rsquo;s output.</li>
+    <li>Turn the rule on. A <em>Manual trigger</em> rule can then be run from the request&rsquo;s <strong>Automation</strong> (lightning) menu.</li>
   </ol>
 
   <h2><span class="num">02</span> Action settings</h2>
   <table class="field-table">
     <tr><th>Field</th><th>What it does</th></tr>
-    <tr><td>Issue Key</td><td>The Service Management request to update. Usually left as <code>{{issue.key}}</code> so the action runs against the issue the rule is triggered on.</td></tr>
-    <tr><td>Source</td><td>Which of the three inputs below to use: <code>group</code>, <code>emails</code>, or <code>accountIds</code>.</td></tr>
-    <tr><td>Group name or Group ID</td><td>Used when Source is <code>group</code>. Every member of the group is added. Requires the rule&rsquo;s actor to have Jira administrator permission (see <a href="#note">note below</a>).</td></tr>
-    <tr><td>Email list</td><td>Used when Source is <code>emails</code>. Comma or newline separated. Each address is resolved to an Account ID; unresolved addresses are skipped and reported, not treated as errors.</td></tr>
-    <tr><td>Account ID list</td><td>Used when Source is <code>accountIds</code>. Comma or newline separated Account IDs, added directly.</td></tr>
+    <tr><td>Issue Key</td><td>The Service Management request to update. Usually <code>{{issue.key}}</code>, so the action runs against the request the rule was triggered on.</td></tr>
+    <tr><td>Source</td><td>Which one of the three inputs below to use. Type <code>group</code>, <code>emails</code>, or <code>accountIds</code>. Only the field that matches the Source is read; leave the other two empty.</td></tr>
+    <tr><td>Group name or Group ID</td><td>Used when Source is <code>group</code>. Active members of the Jira group are added (see the limits below).</td></tr>
+    <tr><td>Email list</td><td>Used when Source is <code>emails</code>. Comma- or newline-separated, for example <code>user1@example.com, user2@example.com</code>. Each address is looked up as an exact match and converted to an account ID.</td></tr>
+    <tr><td>Account ID list</td><td>Used when Source is <code>accountIds</code>. Comma- or newline-separated Atlassian account IDs, for example <code>5b10ac8d82e05b22cc7d4ef5</code> (or <code>qm:&hellip;:&hellip;</code> for some portal accounts).</td></tr>
   </table>
 
-  <div class="callout">
-    <p><strong>Existing participants are never removed.</strong> The action always reads the current Request Participants first and only adds the difference. Running the same rule twice on the same request never creates duplicates.</p>
-  </div>
-
-  <h2><span class="num">03</span> Using the output</h2>
-  <p>Automation names the action&rsquo;s output after the action itself, camelCased from the entity name declared in the app. Check the exact Smart Value name Automation shows for your specific step (it can vary rule to rule), then reference the fields below, for example <code>{{addRequestParticipantsResult.addedCount}}</code>:</p>
-  <table class="field-table">
-    <tr><th>Smart Value field</th><th>Contents</th></tr>
-    <tr><td><code>addedCount</code></td><td>How many participants were newly added in this run.</td></tr>
-    <tr><td><code>skippedCount</code></td><td>How many were already participants, so were skipped (not duplicated).</td></tr>
-    <tr><td><code>failedCount</code></td><td>How many inputs could not be resolved or added.</td></tr>
-    <tr><td><code>addedAccountIds</code></td><td>Comma-separated list of the Account IDs actually added.</td></tr>
-    <tr><td><code>failedValues</code></td><td>Comma-separated list of the inputs that failed, with the reason.</td></tr>
-    <tr><td><code>summary</code></td><td>A one-line, human-readable summary of the result.</td></tr>
-  </table>
-
-  <h3>Example: notify on partial failure</h3>
-  <pre><code>Condition: {{addRequestParticipantsResult.failedCount}} &gt; 0
-
-Action: Add comment (internal only)
-Some participants could not be added: {{addRequestParticipantsResult.failedValues}}</code></pre>
-
-  <h2><span class="num">04</span> Troubleshooting</h2>
+  <h2><span class="num">03</span> What the action does &mdash; and does not do</h2>
   <ul>
-    <li><strong>Everything in the email list fails.</strong> JSM customer-only (portal-only) accounts are sometimes not resolvable through Jira&rsquo;s standard user-search API, depending on profile visibility and site configuration &mdash; this is a known limitation of the underlying Atlassian API, not an app bug. Try the Account ID source instead if you already know the Account ID.</li>
-    <li id="note"><strong>Group source returns a permission error.</strong> Reading Jira group membership requires the Automation rule&rsquo;s actor to have Jira administrator permission &mdash; this is required by Atlassian&rsquo;s own Group Members API. Check the rule&rsquo;s <strong>Actor</strong> setting under Settings.</li>
-    <li><strong>A large group only added the first 500 members.</strong> This is an intentional safety cap to keep the action within Forge&rsquo;s execution time limits. Split very large groups into smaller ones if you need to add more than 500 people in a single run.</li>
-    <li><strong>Smart Value shows literally as text instead of a value.</strong> The entity name in your rule differs from the example above &mdash; open the action step in the rule editor to see the exact name Automation assigned it.</li>
+    <li><strong>It only adds.</strong> The action reads the request&rsquo;s current participants first and adds only the people who are not yet participants. It never removes or replaces an existing participant.</li>
+    <li><strong>Duplicates are skipped.</strong> Running the same rule again on the same request adds nobody new; people who are already participants are counted as <em>skipped</em>. Repeated entries in your input are collapsed.</li>
+    <li><strong>Unmatched emails are skipped and reported.</strong> An email address that cannot be matched to exactly one user is listed in <code>failedValues</code> and does not stop the other addresses.</li>
+    <li><strong>Account IDs are sent as one batch.</strong> If any account ID is not valid for the request, Jira rejects the whole batch, no participant from that run is added, and the rule step fails with an error. Check IDs before running.</li>
+    <li><strong>Group source = licensed Jira users.</strong> Portal-only customer accounts cannot be members of Jira groups, so the group source adds members that are Jira users. Use the email or account ID source for portal customers.</li>
+    <li><strong>Group members are capped at 500 per run.</strong> If a group is larger, the first 500 are used and the summary says the list was truncated.</li>
+    <li><strong>Jira may notify participants.</strong> Request participants can receive notifications about the request and can see it in the customer portal, according to your project&rsquo;s notification and permission settings. Add only people who should have access to the request.</li>
+    <li><strong>Runs as the connected user.</strong> Every Jira call is made with the permissions of the Atlassian account that connected the action (the <em>Connect</em> step). The request must be one that user can edit participants on.</li>
   </ul>
 
-  <h2><span class="num">05</span> Related documents</h2>
+  <h2><span class="num">04</span> Using the output</h2>
+  <p>The action returns the smart values below for use in later steps of the same rule. In Automation, the result is named after the action&rsquo;s verb, product and entity: it appears as <code>{{updatedJiraResult}}</code> in the smart-value picker. Confirmed on a live site:</p>
+  <table class="field-table">
+    <tr><th>Smart value</th><th>Contents</th></tr>
+    <tr><td><code>{{updatedJiraResult.addedCount}}</code></td><td>Number of participants newly added in this run.</td></tr>
+    <tr><td><code>{{updatedJiraResult.skippedCount}}</code></td><td>Number of people who were already participants (not added twice).</td></tr>
+    <tr><td><code>{{updatedJiraResult.failedCount}}</code></td><td>Number of inputs that could not be resolved.</td></tr>
+    <tr><td><code>{{updatedJiraResult.addedAccountIds}}</code></td><td>Account IDs that were actually added.</td></tr>
+    <tr><td><code>{{updatedJiraResult.failedValues}}</code></td><td>The inputs that failed, with the reason.</td></tr>
+    <tr><td><code>{{updatedJiraResult.summary}}</code></td><td>A one-line summary, for example <code>Added: 1 / Skipped (already participants or duplicates): 0 / Failed: 0</code>.</td></tr>
+  </table>
+
+  <h3>Example: group &rarr; request participants</h3>
+  <pre><code>Trigger: Manual trigger
+Action:  Add Request Participants (ParticipantFlow for JSM)
+           Issue Key: {{issue.key}}
+           Source: group
+           Group name or Group ID: support-team
+Action:  Add comment to work item (internal)
+           Request participants updated. {{updatedJiraResult.summary}}</code></pre>
+
+  <h3>Example: report unmatched emails</h3>
+  <pre><code>Condition: {{updatedJiraResult.failedCount}} greater than 0
+Action:    Add comment (internal)
+           These addresses could not be added: {{updatedJiraResult.failedValues}}</code></pre>
+
+  <h2><span class="num">05</span> Permissions</h2>
+  <p>When you install the app, Atlassian asks you to approve the following access:</p>
+  <ul>
+    <li><code>read:servicedesk-request</code> and <code>write:servicedesk-request</code> &mdash; read and update the Request Participants of a request.</li>
+    <li><code>read:jira-user</code> &mdash; look up a user by email address.</li>
+    <li><code>manage:jira-configuration</code> &mdash; needed only for the <em>group</em> source, because Jira&rsquo;s Get users from group API requires Jira administrator permission. The app does not change any Jira configuration.</li>
+  </ul>
+  <p>The app has no external server and stores no data outside Atlassian&rsquo;s Forge platform.</p>
+
+  <h2><span class="num">06</span> Troubleshooting</h2>
+  <ul>
+    <li id="note"><strong>The group source fails with a permission error.</strong> Reading group members requires the Atlassian account that connected the action to have the Administer Jira permission. Reconnect the step with an administrator, or use the email or account ID source.</li>
+    <li><strong>&ldquo;The specified group was not found&rdquo;.</strong> Check the group name or group ID. Group names must match exactly.</li>
+    <li><strong>Some emails are listed in <code>failedValues</code>.</strong> The address did not match exactly one user. Check for typos, or use the account ID source. The other addresses are still processed.</li>
+    <li><strong>&ldquo;The JSM API returned an unexpected response (status: 400)&rdquo; with the account ID source.</strong> At least one account ID is invalid for this request. Remove or correct it and run the rule again.</li>
+    <li><strong>Only 500 members were added from a large group.</strong> This is a fixed per-run cap. Split the group, or run the rule with a smaller group.</li>
+    <li><strong>A smart value appears as literal text.</strong> Use <code>{{updatedJiraResult.&hellip;}}</code> and place the step that uses it after this action in the same rule. Open the smart-value picker in a later step to see the available names.</li>
+  </ul>
+
+  <h2><span class="num">07</span> Related documents</h2>
   <ul>
     <li><a href="privacy-policy.html">Privacy Policy</a></li>
     <li>End User Agreement &mdash; this app uses Atlassian's standard End User License Agreement (Bonterms Cloud Terms), applied automatically through the Atlassian Marketplace listing. No separate agreement is required.</li>
   </ul>
 
-  <h2><span class="num">06</span> Support</h2>
+  <h2><span class="num">08</span> Support</h2>
   <p>Questions or issues with the action: <a href="mailto:support@asunoki.jp">support@asunoki.jp</a>.</p>
 
   <footer class="doc-foot">
