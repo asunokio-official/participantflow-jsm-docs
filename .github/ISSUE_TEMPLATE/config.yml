@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Get support (private)
+    url: https://asunoki.jp/support/
+    about: Please use the ASUNOKI support page or email support@asunoki.jp. Issues here are public, so never post customer data, API tokens or passwords.
